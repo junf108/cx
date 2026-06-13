@@ -1,11 +1,11 @@
 {
-  "sid": "d48e9e0ce07089851353dae15e118af609091f48f707c09c6d0c4ac482afd46e",
+  "sid": "77b8cff9373fa2a59eef3f1d382ecff423bb223142a68e56ef768c388e1eaf16",
   "parents": [
     "b54efdcfaa004550f6a49e56cde65e51b3e8a4e671d8be3b1c1c3af4dee4c8d8"
   ],
   "kind": "Manual",
   "context": {
-    "prompt": "Initial project setup: import cx source files",
+    "prompt": "Build cx: an AI-native code management CLI tool that operates on top of git.\n\nThe tool provides structured context management for AI-assisted coding by treating AI sessions as first-class citizens. Key design decisions:\n\n1. Rust single-binary distribution (clap + serde + sha2 + chrono)\n2. Branch-based session tracking — no global state file, active session inferred from current git branch name\n3. Turn-indexed snapshot filenames (1.json, 2.json) — the nth commit on the session branch = the nth snapshot\n4. .cx/ metadata is tracked by git — survives clone, no metadata loss on merge\n5. Content-addressed SID (SHA-256) for integrity checking (not used as filename)\n6. Intent-based review grouping: feature / fix / refactor / chore / etc.\n\nCommands: init, start, apply (with --intent), status, end (--merge/--abandon), log, review",
     "conversation_summary": null,
     "turn_index": 1
   },
