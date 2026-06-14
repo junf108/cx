@@ -5,8 +5,6 @@ pub fn print_status(info: &SessionStatusInfo) {
     println!("Session: {}", info.id);
     println!("Branch:  {}", info.branch);
     println!("Status:  {} ({} snapshots)", info.status, info.snapshot_count);
-    println!("Prompt:  {}", info.prompt);
-    println!();
 
     if info.semantic_units.is_empty() {
         println!("No changes recorded yet.");

@@ -1,0 +1,30 @@
+{
+  "sid": "7cab7742b1fb1afe46b2e492ad4553c4b4ec5193d2427c5c3e25fe15de2fd639",
+  "parents": [
+    "0fe6bf80b87800b6241d6b78d9c96be8fc4d3c83"
+  ],
+  "kind": "AiSession",
+  "context": {
+    "conversation_summary": "讨论了 snapshot 中 prompt 的语义问题：原始 prompt 不一定代表需求，更适合作为 session 标签；决定去掉 SessionMeta.prompt 和 conversation_summary，Context.conversation_summary 由 agent 在 cx apply --summary 时传入；cx start 也不再需要 prompt 参数，session ID 改由 base_commit + 时间戳生成；修复 current_session_id 来适配无 slug 的分支名",
+    "turn_index": 1
+  },
+  "semantic_units": [
+    {
+      "intent": "Refactor",
+      "scope": "data-model",
+      "description": "重构数据模型：Context/SessionMeta 去掉 prompt，conversation_summary 由 agent 传入；cx start 去参数",
+      "risk": "Medium",
+      "affected_files": [
+        "src/cli.rs",
+        "src/context.rs",
+        "src/display.rs",
+        "src/git_api.rs",
+        "src/main.rs",
+        "src/session.rs",
+        "src/snapshot.rs"
+      ]
+    }
+  ],
+  "author": "user:junf",
+  "timestamp": "2026-06-14T10:33:04.766871+08:00"
+}

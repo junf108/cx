@@ -61,7 +61,6 @@ pub struct SessionStatusInfo {
     pub id: String,
     pub branch: String,
     pub status: String,
-    pub prompt: String,
     pub snapshot_count: u32,
     pub semantic_units: Vec<SemanticUnit>,
 }
@@ -111,7 +110,7 @@ impl SessionManager {
     }
 
     /// Start a new session (cx start)
-    pub fn start(&self, prompt: &str, author: &str) -> Result<()> {
+    pub fn start(&self, author: &str) -> Result<()> {
         // Check if already in an active session (already on a session branch)
         if let Ok(Some(existing_sid)) = git_api::current_session_id() {
             if let Ok(meta) = self.get_store().read_session_meta(&existing_sid) {
@@ -125,8 +124,8 @@ impl SessionManager {
         let base_branch = git_api::current_branch()?;
 
         // Generate session ID
-        let sid = snapshot::compute_session_id(prompt, &base_commit);
-        let branch = snapshot::session_branch_name(&sid, prompt);
+        let sid = snapshot::compute_session_id(&base_commit);
+        let branch = snapshot::session_branch_name(&sid);
 
         // Stash uncommitted changes
         let stashed = git_api::has_uncommitted_changes()?;
@@ -147,8 +146,6 @@ impl SessionManager {
         let meta = SessionMeta {
             id: sid.clone(),
             branch,
-            prompt: prompt.to_string(),
-            conversation_summary: None,
             author: author.to_string(),
             status: SessionStatus::Active,
             created_at: now,
@@ -159,7 +156,6 @@ impl SessionManager {
         self.get_store().write_session_meta(&meta)?;
 
         println!("✓ Started session {sid} on branch {}", meta.branch);
-        println!("  Prompt: {prompt}");
         Ok(())
     }
 
@@ -167,6 +163,7 @@ impl SessionManager {
     pub fn apply(
         &self,
         message: &str,
+        summary: Option<String>,
         intent_spec: &IntentSpec,
         author: &str,
         _no_verify: bool,
@@ -216,7 +213,7 @@ impl SessionManager {
         let snapshot = snapshot::create_snapshot(
             parents,
             SnapshotKind::AiSession,
-            meta.prompt.clone(),
+            summary,
             turn_index,
             vec![semantic_unit],
             author.to_string(),
@@ -254,7 +251,6 @@ impl SessionManager {
             id: meta.id,
             branch: meta.branch,
             status: meta.status.to_string(),
-            prompt: meta.prompt,
             snapshot_count: meta.snapshot_count,
             semantic_units: all_units,
         })
@@ -354,10 +350,9 @@ impl SessionManager {
             entries.sort_by(|a, b| a.created_at.cmp(&b.created_at));
             for meta in entries.iter().rev().take(10) {
                 println!(
-                    "{}  {}  {}  {} snapshots",
+                    "{}  {}  {} snapshots",
                     meta.id,
                     meta.status,
-                    meta.prompt.chars().take(50).collect::<String>(),
                     meta.snapshot_count,
                 );
             }

@@ -25,14 +25,15 @@ fn run() -> session::Result<()> {
     match &cli.command {
         Command::Init => SessionManager::init(),
 
-        Command::Start { prompt } => {
+        Command::Start => {
             let mgr = SessionManager::open()?;
             let author = determine_author();
-            mgr.start(prompt, &author)
+            mgr.start(&author)
         }
 
         Command::Apply {
             message,
+            summary,
             intent,
             no_verify,
         } => {
@@ -40,7 +41,7 @@ fn run() -> session::Result<()> {
                 .map_err(|e| session::SessionError::User(e))?;
             let mgr = SessionManager::open()?;
             let author = determine_author();
-            mgr.apply(message, &spec, &author, *no_verify)
+            mgr.apply(message, summary.clone(), &spec, &author, *no_verify)
         }
 
         Command::Status => {

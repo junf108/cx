@@ -128,13 +128,11 @@ pub fn current_session_id() -> Result<Option<String>> {
         return Ok(None);
     }
     let after_prefix = &branch[3..]; // skip "cx/"
-    if let Some(dash_pos) = after_prefix.find('-') {
-        let sid = &after_prefix[..dash_pos];
-        if sid.starts_with("s_") {
-            return Ok(Some(sid.to_string()));
-        }
+    if after_prefix.starts_with("s_") {
+        Ok(Some(after_prefix.to_string()))
+    } else {
+        Ok(None)
     }
-    Ok(None)
 }
 
 /// Diff between two commits

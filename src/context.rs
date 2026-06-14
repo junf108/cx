@@ -34,8 +34,6 @@ pub enum SnapshotKind {
 /// Change context: describes why a change was made
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Context {
-    /// Original requirement that triggered this change
-    pub prompt: String,
     /// Conversation summary (optional)
     pub conversation_summary: Option<String>,
     /// Turn index within the session
@@ -165,8 +163,6 @@ impl std::fmt::Display for SessionStatus {
 pub struct SessionMeta {
     pub id: String,
     pub branch: String,
-    pub prompt: String,
-    pub conversation_summary: Option<String>,
     pub author: String,
     pub status: SessionStatus,
     pub created_at: String,

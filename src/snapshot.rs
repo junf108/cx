@@ -23,46 +23,36 @@ fn hex_encode_first_n(bytes: &[u8], n: usize) -> String {
 }
 
 /// Generate a session ID
-/// Format: s_ + first 8 hex chars of SHA256(prompt + base_commit)
-pub fn compute_session_id(prompt: &str, base_commit: &str) -> String {
+/// Format: s_ + first 8 hex chars of SHA256(base_commit + timestamp)
+pub fn compute_session_id(base_commit: &str) -> String {
     let mut hasher = Sha256::new();
-    hasher.update(prompt.as_bytes());
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos()
+        .to_string();
     hasher.update(base_commit.as_bytes());
+    hasher.update(now.as_bytes());
     let result = hasher.finalize();
     format!("s_{}", hex_encode_first_n(&result, 4))
 }
 
 /// Generate a branch name
-pub fn session_branch_name(sid: &str, prompt: &str) -> String {
-    let slug: String = prompt
-        .chars()
-        .filter(|c| c.is_alphanumeric() || *c == '-' || *c == '_' || *c == ' ')
-        .collect::<String>()
-        .split_whitespace()
-        .collect::<Vec<&str>>()
-        .join("-")
-        .to_lowercase()
-        .chars()
-        .take(30)
-        .collect();
-    format!("cx/{sid}-{slug}")
+pub fn session_branch_name(sid: &str) -> String {
+    format!("cx/{sid}")
 }
 
 /// Create a new Snapshot
 pub fn create_snapshot(
     parents: Vec<String>,
     kind: SnapshotKind,
-    prompt: String,
+    conversation_summary: Option<String>,
     turn_index: u32,
     semantic_units: Vec<SemanticUnit>,
     author: String,
     timestamp: String,
 ) -> Snapshot {
-    let context = Context {
-        prompt,
-        conversation_summary: None,
-        turn_index,
-    };
+    let context = Context { conversation_summary, turn_index };
 
     let mut snapshot = Snapshot {
         sid: String::new(),
