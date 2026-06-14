@@ -1,4 +1,0 @@
-interface:
-  display_name: "cx Workflow"
-  short_description: "Automatic cx session tracking for coding tasks"
-  default_prompt: "Use cx to track AI coding sessions"
