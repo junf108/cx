@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-apple-darwin
+            os: macos-13
+            suffix: ''
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            suffix: ''
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            suffix: ''
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            suffix: ''
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            suffix: '.exe'
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: ${{ matrix.target }}
+
+      - name: Build release binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Package binary
+        shell: bash
+        run: |
+          BIN="target/${{ matrix.target }}/release/cx${{ matrix.suffix }}"
+          ARCHIVE="cx-${{ matrix.target }}.tar.gz"
+          tar czf "$ARCHIVE" -C "$(dirname "$BIN")" "$(basename "$BIN")"
+          sha256sum "$ARCHIVE" > "$ARCHIVE.sha256"
+          echo "archive=$ARCHIVE" >> "$GITHUB_ENV"
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.archive }}
+            ${{ env.archive }}.sha256
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+
+      - name: Upload artifact for checksums job
+        uses: actions/upload-artifact@v4
+        with:
+          name: checksum-${{ matrix.target }}
+          path: ${{ env.archive }}.sha256
+          retention-days: 1
+
+  checksums:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all checksum artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: checksums
+          pattern: checksum-*
+          merge-multiple: true
+
+      - name: Combine into SHA256SUMS
+        run: cat checksums/*.sha256 > SHA256SUMS
+
+      - name: Upload combined checksums
+        uses: softprops/action-gh-release@v2
+        with:
+          files: SHA256SUMS
+          fail_on_unmatched_files: true

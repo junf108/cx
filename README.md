@@ -5,6 +5,38 @@ management for AI-assisted coding. It treats AI sessions as first-class
 citizens with snapshot tracking, intent grouping, and review-by-intent — all
 without replacing git.
 
+## Installation
+
+### One-liner (macOS / Linux)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/junf108/cx/main/scripts/install.sh | sh
+```
+
+This downloads the pre-built binary for your platform from the [latest release](https://github.com/junf108/cx/releases) and installs it to `/usr/local/bin`.
+
+```bash
+# Install to a custom location
+CX_INSTALL_DIR=~/.local/bin curl -fsSL https://raw.githubusercontent.com/junf108/cx/main/scripts/install.sh | sh
+```
+
+### Pre-built binaries
+
+Download the archive matching your platform from the [releases page](https://github.com/junf108/cx/releases), then:
+
+```bash
+tar xzf cx-<target>.tar.gz
+sudo mv cx /usr/local/bin/
+```
+
+### Via cargo
+
+If you have the Rust toolchain installed:
+
+```bash
+cargo install --git https://github.com/junf108/cx
+```
+
 ## Quick Start
 
 ```bash
@@ -133,7 +165,7 @@ commit bb7e0aa (cx/s_xxxxxx)
 | Session identity | Git branch name | No global state file needed |
 | .cx/ management | Tracked by git | Survives clone, no metadata loss |
 
-## Build
+## Build from Source
 
 ```bash
 cargo install --path .

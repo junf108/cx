@@ -4,6 +4,38 @@
 它将 AI 会话视为一等公民，支持 snapshot 追踪、按意图分组和审查——同时完全兼容
 你的 git 工作流。
 
+## 安装
+
+### 一行命令安装（macOS / Linux）
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/junf108/cx/main/scripts/install.sh | sh
+```
+
+该命令会自动检测你的系统架构，从 [最新发布](https://github.com/junf108/cx/releases) 下载对应的预编译二进制并安装到 `/usr/local/bin`。
+
+```bash
+# 安装到自定义路径
+CX_INSTALL_DIR=~/.local/bin curl -fsSL https://raw.githubusercontent.com/junf108/cx/main/scripts/install.sh | sh
+```
+
+### 下载预编译二进制
+
+从 [releases 页面](https://github.com/junf108/cx/releases) 下载对应平台的压缩包：
+
+```bash
+tar xzf cx-<target>.tar.gz
+sudo mv cx /usr/local/bin/
+```
+
+### 通过 cargo 安装
+
+如果你已安装 Rust 工具链：
+
+```bash
+cargo install --git https://github.com/junf108/cx
+```
+
 ## 快速开始
 
 ```bash
@@ -65,7 +97,7 @@ agents/skills/cx-workflow/
 2. **记录变更**: `git add <文件>` + `cx apply -m "<说明>" --intent <类型>,scope=<作用域>` — 每次变更加语义标签
 3. **结束会话**: `cx end --merge` — 合入主分支
 
-### 安装
+### 安装技能
 
 将技能链接到 Codex 发现目录即可启用：
 
@@ -86,6 +118,12 @@ cx (CLI 二进制)
 ├── store.rs        — .cx/ 存储层（基于 JSON 的内容寻址）
 ├── git_api.rs      — Git 命令封装
 └── display.rs      — 格式化输出（status, log, review）
+```
+
+### 数据流
+
+```
+cli → session → (store + git_api) → display
 ```
 
 ### 存储结构
@@ -125,7 +163,7 @@ commit bb7e0aa (cx/s_xxxxxx)
 | 会话标识 | Git 分支名 | 无需全局状态文件 |
 | .cx/ 管理 | 由 git 跟踪 | clone 后元数据不丢失 |
 
-## 构建
+## 从源码构建
 
 ```bash
 cargo install --path .
