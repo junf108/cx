@@ -26,7 +26,13 @@ fn run() -> session::Result<()> {
         Command::Init => SessionManager::init(),
 
         Command::Start => {
-            let mgr = SessionManager::open()?;
+            let mgr = match SessionManager::open() {
+                Ok(mgr) => mgr,
+                Err(_) => {
+                    SessionManager::init()?;
+                    SessionManager::open()?
+                }
+            };
             let author = determine_author();
             mgr.start(&author)
         }
