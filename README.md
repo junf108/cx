@@ -46,6 +46,36 @@ cx end --merge
 - **Scope** (optional): arbitrary label like `payment`, `login`
 - **Risk** (optional, default `low`): `low` | `medium` | `high`
 
+## Codex Skill
+
+`cx` ships with a Codex skill that makes [Codex](https://codex.ai) automatically use `cx` during AI coding sessions.
+
+### Location
+
+```
+agents/skills/cx-workflow/
+├── SKILL.md               # Skill instructions consumed by Codex
+└── agents/openai.yaml     # UI metadata
+```
+
+### How It Works
+
+When Codex is coding in a repository that has `.cx/` initialized, the skill instructs Codex to:
+
+1. **Start a session**: `cx start "<prompt>"` — creates a session branch
+2. **Record changes**: `git add <files>` + `cx apply -m "<msg>" --intent <type>,scope=<x>` — records each change as a labeled snapshot
+3. **Finish the session**: `cx end --merge` — merges the session branch back to the base branch
+
+### Installation
+
+To enable the skill, link it into Codex's skill discovery directory:
+
+```bash
+ln -s /absolute/path/to/cx/agents/skills/cx-workflow ~/.codex/skills/cx-workflow
+```
+
+Once linked, Codex will automatically load the skill and use `cx` whenever coding in a `.cx/`-initialized repository.
+
 ## Architecture
 
 ```

@@ -45,6 +45,36 @@ cx end --merge
 - **作用域**（可选）: 任意标签如 `payment`、`login`
 - **风险**（可选，默认 `low`）: `low` | `medium` | `high`
 
+## Codex 技能
+
+`cx` 自带一个 Codex 技能，让 [Codex](https://codex.ai) 在编码过程中自动使用 `cx`。
+
+### 位置
+
+```
+agents/skills/cx-workflow/
+├── SKILL.md               # Codex 读取的技能指令
+└── agents/openai.yaml     # UI 元数据
+```
+
+### 工作原理
+
+当 Codex 在已初始化 `.cx/` 的仓库中编码时，技能会指示 Codex 自动执行以下流程：
+
+1. **开始会话**: `cx start "<prompt>"` — 创建 session 分支
+2. **记录变更**: `git add <文件>` + `cx apply -m "<说明>" --intent <类型>,scope=<作用域>` — 每次变更加语义标签
+3. **结束会话**: `cx end --merge` — 合入主分支
+
+### 安装
+
+将技能链接到 Codex 发现目录即可启用：
+
+```bash
+ln -s /绝对路径/cx/agents/skills/cx-workflow ~/.codex/skills/cx-workflow
+```
+
+链接后，Codex 在带 `.cx/` 的仓库中编码时会自动加载并使用 `cx`。
+
 ## 架构
 
 ```
