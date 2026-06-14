@@ -2,7 +2,7 @@
 
 `cx` is a CLI tool that operates on top of git, providing structured context
 management for AI-assisted coding. It treats AI sessions as first-class
-citizens with prompt tracking, intent grouping, and review-by-intent — all
+citizens with snapshot tracking, intent grouping, and review-by-intent — all
 without replacing git.
 
 ## Quick Start
@@ -12,7 +12,7 @@ without replacing git.
 cx init
 
 # Start an AI session
-cx start "Add payment module"
+cx start
 
 # Make changes and record them
 cx apply -m "Add Alipay signature" --intent feature,scope=payment
@@ -29,7 +29,7 @@ cx end --merge
 | Command | Description |
 |---------|-------------|
 | `init` | Initialize .cx/ metadata store in the current git repo |
-| `start <prompt>` | Start a new AI session, creating a session branch |
+| `start` | Start a new AI session, creating a session branch |
 | `apply -m <msg> --intent <spec>` | Record staged changes as a snapshot with semantic labels |
 | `status` | Show current session overview grouped by intent |
 | `end --merge / --abandon` | End the session: merge to base branch or discard |
@@ -69,7 +69,7 @@ cli → session → (store + git_api) → display
 
 ```
 .cx/sessions/<session_id>/
-├── meta.json           # Session metadata (prompt, status, base branch)
+├── meta.json           # Session metadata (status, base branch)
 └── snapshots/
     └── <turn>.json     # Snapshot (filename = commit sequence number)
 ```
@@ -80,7 +80,7 @@ cli → session → (store + git_api) → display
 together in a single commit. Session branches are real git branches.
 
 ```
-commit bb7e0aa (cx/s_xxxxxx-add-payment)
+commit bb7e0aa (cx/s_xxxxxx)
 ├── pay.rs                              # Code changes
 └── .cx/sessions/s_xxxxxx/              # Session metadata
     ├── meta.json
@@ -89,7 +89,7 @@ commit bb7e0aa (cx/s_xxxxxx-add-payment)
 
 - **commit → snapshot**: `git show --name-only <hash>` reveals the `.cx/`
   file path, which encodes both the session ID and turn number.
-- **snapshot → git status**: The current branch name `cx/<sid>-<slug>`
+- **snapshot → git status**: The current branch name `cx/<sid>`
   identifies the active session.
 - **merge**: After `cx end --merge`, all metadata is on the base branch.
 

@@ -1,7 +1,7 @@
 # cx — AI 原生代码管理工具
 
 `cx` 是一个工作在 git 之上的 CLI 工具，为 AI 辅助编码提供结构化上下文管理。
-它将 AI 会话视为一等公民，支持 prompt 追踪、按意图分组和审查——同时完全兼容
+它将 AI 会话视为一等公民，支持 snapshot 追踪、按意图分组和审查——同时完全兼容
 你的 git 工作流。
 
 ## 快速开始
@@ -11,7 +11,7 @@
 cx init
 
 # 开始一个 AI 会话
-cx start "添加支付模块，支持支付宝和微信支付"
+cx start
 
 # 编码并记录变更
 cx apply -m "添加支付宝签名逻辑" --intent feature,scope=payment
@@ -28,7 +28,7 @@ cx end --merge
 | 命令 | 说明 |
 |------|------|
 | `init` | 在当前 git 仓库初始化 .cx/ 元数据存储 |
-| `start <prompt>` | 开始一个新的 AI 会话，自动创建分支 |
+| `start` | 开始一个新的 AI 会话，自动创建分支 |
 | `apply -m <msg> --intent <spec>` | 将暂存的变更记录为带语义标签的快照 |
 | `status` | 显示当前会话概览，按意图分组 |
 | `end --merge / --abandon` | 结束会话：合入主分支或丢弃 |
@@ -62,7 +62,7 @@ cx (CLI 二进制)
 
 ```
 .cx/sessions/<session_id>/
-├── meta.json           # 会话元数据（prompt、状态、基础分支）
+├── meta.json           # 会话元数据（状态、基础分支）
 └── snapshots/
     └── <序号>.json     # 快照（文件名 = commit 序号）
 ```
@@ -73,7 +73,7 @@ cx (CLI 二进制)
 会话分支就是真正的 git 分支。
 
 ```
-commit bb7e0aa (cx/s_xxxxxx-add-payment)
+commit bb7e0aa (cx/s_xxxxxx)
 ├── pay.rs                              # 代码变更
 └── .cx/sessions/s_xxxxxx/              # 会话元数据
     ├── meta.json
@@ -82,7 +82,7 @@ commit bb7e0aa (cx/s_xxxxxx-add-payment)
 
 - **commit → snapshot**: `git show --name-only <hash>` 输出的文件路径中
   包含了 session ID 和 turn 编号
-- **snapshot → 当前状态**: 当前分支名 `cx/<sid>-<slug>` 直接标识活跃会话
+- **snapshot → 当前状态**: 当前分支名 `cx/<sid>` 直接标识活跃会话
 - **merge**: `cx end --merge` 后，所有元数据都在主分支上
 
 ### 设计决策

@@ -1,0 +1,25 @@
+{
+  "sid": "1f7c1bba67b23682c8471d02c0536f2ff395b4602775acfcca4836c0e1196b37",
+  "parents": [
+    "0a0f0a6c87e6ae951c1932f2a107dc2e9dd962f1"
+  ],
+  "kind": "AiSession",
+  "context": {
+    "conversation_summary": "README 和 README.zh.md 中的 prompt 引用全部更新为 snapshot，cx start 示例移除参数，分支名格式更新为 cx/<sid>，meta.json 注释去掉 prompt 字段",
+    "turn_index": 1
+  },
+  "semantic_units": [
+    {
+      "intent": "Docs",
+      "scope": "readme",
+      "description": "更新 README 文档：去掉 prompt 相关内容",
+      "risk": "Low",
+      "affected_files": [
+        "README.md",
+        "README.zh.md"
+      ]
+    }
+  ],
+  "author": "user:junf",
+  "timestamp": "2026-06-14T10:47:06.036791+08:00"
+}
