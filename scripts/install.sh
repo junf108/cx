@@ -22,14 +22,7 @@ detect_target() {
 
   case "$_os" in
     darwin) _os="apple-darwin" ;;
-    linux)
-      # Use musl for aarch64 (fully static), glibc for x86_64
-      if [ "$_arch" = "aarch64" ] || [ "$_arch" = "arm64" ]; then
-        _os="unknown-linux-musl"
-      else
-        _os="unknown-linux-gnu"
-      fi
-      ;;
+    linux)  _os="unknown-linux-gnu" ;;
     mingw*|msys*|cygwin*) _os="pc-windows-msvc" ;;
     *)
       error "unsupported OS: $(uname -s)"
